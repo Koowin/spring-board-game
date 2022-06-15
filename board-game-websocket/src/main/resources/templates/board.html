@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>CSS Grid starting point</title>
+    <style>
+        body {
+            width: 90%;
+            max-width: 800px;
+            margin: 5em;
+            font: .9em/1.2 Arial, Helvetica, sans-serif;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 100px 100px 100px 100px 100px 100px 100px 100px;
+        }
+        .container > button {
+            width: 100px;
+            height: 100px;
+            font-size: 80px;
+        }
+        .container > .bright {
+            background-color: bisque;
+        }
+        .container > .dark {
+            background-color: sienna;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container" id="board">
+</div>
+
+</body>
+<script>
+    const buttonArr = new Array(8);
+    let webSocket;
+
+    window.onload=function(){
+        const board = document.getElementById('board');
+
+        for (let i = 0; i < 8; i++) {
+            buttonArr[i] = new Array(8);
+            for (let j = 0; j < 8; j++) {
+                buttonArr[i][j] = document.createElement('button');
+                buttonArr[i][j].value = String(i + '' + j);
+
+                if ((i + j) % 2 === 0) {
+                    buttonArr[i][j].className = 'bright';
+                } else {
+                    buttonArr[i][j].className = 'dark';
+                }
+
+                buttonArr[i][j].addEventListener("click", send);
+
+                board.append(buttonArr[i][j]);
+            }
+        }
+        locatePieces();
+        connect();
+    }
+
+    function locatePieces() {
+        buttonArr[0][0].innerText = '♜';
+        buttonArr[0][7].innerText = '♜';
+        buttonArr[0][1].innerText = '♞';
+        buttonArr[0][6].innerText = '♞';
+        buttonArr[0][2].innerText = '♝';
+        buttonArr[0][5].innerText = '♝';
+        buttonArr[0][3].innerText = '♛';
+        buttonArr[0][4].innerText = '♚';
+
+        for (let i = 0; i < 8; i++) {
+            buttonArr[1][i].innerText = '♟';
+        }
+
+        buttonArr[7][0].innerText = '♖';
+        buttonArr[7][7].innerText = '♖';
+        buttonArr[7][1].innerText = '♘';
+        buttonArr[7][6].innerText = '♘';
+        buttonArr[7][2].innerText = '♗';
+        buttonArr[7][5].innerText = '♗';
+        buttonArr[7][3].innerText = '♕';
+        buttonArr[7][4].innerText = '♔';
+
+        for (let i = 0; i < 8; i++) {
+            buttonArr[6][i].innerText = '♙';
+        }
+    }
+
+    function connect() {
+        webSocket = new WebSocket("ws://localhost:8080/board");
+        webSocket.onopen = onOpen;
+        webSocket.onclose = onClose;
+        webSocket.onmessage = onMessage;
+    }
+
+    function disconnect() {
+        webSocket.close();
+    }
+
+    function send(event) {
+        webSocket.send(event.target.value);
+    }
+
+    function onMessage(e) {
+
+    }
+
+    function onOpen() {
+
+    }
+
+    function onClose() {
+
+    }
+
+
+
+</script>
+
+</html>
