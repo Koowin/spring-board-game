@@ -1,5 +1,6 @@
-package com.koowin.boardgamewebsocket;
+package com.koowin.boardgamewebsocket.socketHandler;
 
+import com.koowin.boardgamewebsocket.exception.FullSessionException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.BinaryMessage;
@@ -22,6 +23,9 @@ public class BoardHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+        if (nextId >= 2) {
+            throw new FullSessionException();
+        }
         sessions.put(session, nextId);
         log.info("접속 : {}", nextId++);
     }

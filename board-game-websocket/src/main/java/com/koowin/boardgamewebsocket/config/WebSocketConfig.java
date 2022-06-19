@@ -1,5 +1,6 @@
-package com.koowin.boardgamewebsocket;
+package com.koowin.boardgamewebsocket.config;
 
+import com.koowin.boardgamewebsocket.socketHandler.BoardHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
