@@ -30,13 +30,26 @@
         </div>
     </div>
 </nav>
-
 <div class="container" id="board">
 </div>
 </body>
 <script>
     const buttonArr = new Array(8);
     let webSocket;
+
+    // Pieces
+    const blackKing = '♚';
+    const blackQueen = '♛';
+    const blackRook = '♜';
+    const blackKnight = '♞';
+    const blackBishop = '♝';
+    const blackPawn = '♟';
+    const whiteKing = '♔';
+    const whiteQueen = '♕';
+    const whiteRook = '♖';
+    const whiteKnight = '♘';
+    const whiteBishop = '♗';
+    const whitePawn = '♙';
 
     window.onload=function(){
         const board = document.getElementById('board');
@@ -63,30 +76,30 @@
     }
 
     function locatePieces() {
-        buttonArr[0][0].innerText = '♜';
-        buttonArr[0][7].innerText = '♜';
-        buttonArr[0][1].innerText = '♞';
-        buttonArr[0][6].innerText = '♞';
-        buttonArr[0][2].innerText = '♝';
-        buttonArr[0][5].innerText = '♝';
-        buttonArr[0][3].innerText = '♛';
-        buttonArr[0][4].innerText = '♚';
+        buttonArr[0][0].innerText = blackRook;
+        buttonArr[0][7].innerText = blackRook;
+        buttonArr[0][1].innerText = blackKnight;
+        buttonArr[0][6].innerText = blackKnight;
+        buttonArr[0][2].innerText = blackBishop;
+        buttonArr[0][5].innerText = blackBishop;
+        buttonArr[0][3].innerText = blackQueen;
+        buttonArr[0][4].innerText = blackKing;
 
         for (let i = 0; i < 8; i++) {
-            buttonArr[1][i].innerText = '♟';
+            buttonArr[1][i].innerText = blackPawn;
         }
 
-        buttonArr[7][0].innerText = '♖';
-        buttonArr[7][7].innerText = '♖';
-        buttonArr[7][1].innerText = '♘';
-        buttonArr[7][6].innerText = '♘';
-        buttonArr[7][2].innerText = '♗';
-        buttonArr[7][5].innerText = '♗';
-        buttonArr[7][3].innerText = '♕';
-        buttonArr[7][4].innerText = '♔';
+        buttonArr[7][0].innerText = whiteRook;
+        buttonArr[7][7].innerText = whiteRook;
+        buttonArr[7][1].innerText = whiteKnight;
+        buttonArr[7][6].innerText = whiteKnight;
+        buttonArr[7][2].innerText = whiteBishop;
+        buttonArr[7][5].innerText = whiteBishop;
+        buttonArr[7][3].innerText = whiteQueen;
+        buttonArr[7][4].innerText = whiteKing;
 
         for (let i = 0; i < 8; i++) {
-            buttonArr[6][i].innerText = '♙';
+            buttonArr[6][i].innerText = whitePawn;
         }
     }
 
