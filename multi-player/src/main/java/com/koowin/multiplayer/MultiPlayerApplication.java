@@ -6,8 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class MultiPlayerApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(MultiPlayerApplication.class, args);
-    }
-
+  public static void main(String[] args) {
+    SpringApplication.run(MultiPlayerApplication.class, args);
+  }
 }
