@@ -19,13 +19,13 @@ public abstract class OneMovePiece extends AbstractPiece {
       int row = from.getRow() + direction[0];
       int column = from.getColumn() + direction[1];
 
-      if (!isValid(row) || !isValid(column)) {
+      if (!isValidRowColumn(row) || !isValidRowColumn(column)) {
         continue;
       }
 
       Square next = squares[row][column];
 
-      if (next.peek() == null || next.peek().color() != color) {
+      if (next.getPiece() == null || next.getPiece().color() != color) {
         ret.add(next);
       }
     }

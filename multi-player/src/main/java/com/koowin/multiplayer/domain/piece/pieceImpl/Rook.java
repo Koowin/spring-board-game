@@ -1,11 +1,11 @@
 package com.koowin.multiplayer.domain.piece.pieceImpl;
 
-import com.koowin.multiplayer.dto.request.MoveRequestDto;
+import com.koowin.multiplayer.dto.request.MoveRequestDomainDto;
 import com.koowin.multiplayer.domain.board.Color;
 import com.koowin.multiplayer.domain.piece.ManyMovePiece;
-import com.koowin.multiplayer.domain.piece.Piece;
 import com.koowin.multiplayer.domain.piece.PieceType;
 import com.koowin.multiplayer.domain.position.Square;
+import com.koowin.multiplayer.dto.response.PieceSetResponseDomainDto;
 import com.koowin.multiplayer.exception.PieceCannotMoveException;
 import java.util.List;
 
@@ -24,18 +24,24 @@ public class Rook extends ManyMovePiece {
   }
 
   @Override
-  public boolean canMove(MoveRequestDto movementDto) {
+  public boolean canMove(MoveRequestDomainDto movementDto) {
     return false;
   }
 
   @Override
-  public Piece move(MoveRequestDto movementDto)
+  public List<PieceSetResponseDomainDto> move(MoveRequestDomainDto movementDto)
       throws PieceCannotMoveException {
+
+    isMoved = true;
     return null;
   }
 
   @Override
   public List<Square> movableSquares(Square from, Square[][] squares) {
     return movablePositionsWithDirection(from, squares, DIRECTIONS);
+  }
+
+  boolean isMoved() {
+    return isMoved;
   }
 }

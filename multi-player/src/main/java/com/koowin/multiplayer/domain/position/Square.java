@@ -8,7 +8,7 @@ public interface Square {
 
   int getColumn();
 
-  Piece peek();
+  Piece getPiece();
 
   Piece setPiece(Piece piece);
 }

@@ -24,15 +24,15 @@ public abstract class ManyMovePiece extends AbstractPiece {
         row += direction[0];
         column += direction[1];
 
-        if (!isValid(row) || !isValid(column)) {
+        if (!isValidRowColumn(row) || !isValidRowColumn(column)) {
           break;
         }
 
         Square next = squares[row][column];
 
-        if (next.peek() == null) {
+        if (next.getPiece() == null) {
           ret.add(next);
-        } else if (next.peek().color() == this.color) {
+        } else if (next.getPiece().color() == this.color) {
           break;
         } else {
           ret.add(next);

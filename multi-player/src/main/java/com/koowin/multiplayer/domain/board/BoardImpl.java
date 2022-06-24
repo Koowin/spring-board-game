@@ -1,9 +1,15 @@
 package com.koowin.multiplayer.domain.board;
 
+import com.koowin.multiplayer.domain.piece.PieceType;
 import com.koowin.multiplayer.domain.piece.pieceImpl.*;
 import com.koowin.multiplayer.domain.position.Square;
 import com.koowin.multiplayer.domain.position.SquareImpl;
-import com.koowin.multiplayer.dto.response.PieceSetResponseDto;
+import com.koowin.multiplayer.dto.request.MoveRequestClientDto;
+import com.koowin.multiplayer.dto.request.MoveRequestDomainDto;
+import com.koowin.multiplayer.dto.request.PeekRequestClientDto;
+import com.koowin.multiplayer.dto.request.PeekRequestDomainDto;
+import com.koowin.multiplayer.dto.response.PieceSetResponseClientDto;
+import com.koowin.multiplayer.exception.BadSquareNameException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -25,15 +31,33 @@ public class BoardImpl implements Board {
   private static final char ROW_BASE = '8';
   private static final char COLUMN_BASE = 'a';
 
-  private static Square parseStringToPosition(String p, Square[][] squares) {
+  /**
+   * a1 ~ h8 까지의 체스 칸 이름을 실제 Square 로 변환해준다.
+   *
+   * @param p 체스 칸 이름
+   * @param squares 보드
+   * @return 체스 칸 이름으로 찾은 보드 안의 특정 칸
+   * @throws BadSquareNameException 올바르지 않은 이름을 입력함
+   */
+  private static Square parseStringToSquare(String p, Square[][] squares)
+      throws BadSquareNameException {
     char[] arr = p.toCharArray();
     int row = ROW_BASE - arr[1];
     int column = arr[0] - COLUMN_BASE;
 
+    if (row < 0 || row >= 8 || column < 0 || column >= 8) {
+      throw new BadSquareNameException(p);
+    }
     return squares[row][column];
   }
 
-  private static String parsePositionToString(Square p) {
+  /**
+   * Square 로부터 a1 ~ h8 까지의 체스 칸 이름으로 변환해준다.
+   *
+   * @param p 특정 칸
+   * @return 체스 칸 이름
+   */
+  private static String parseSquareToString(Square p) {
     StringBuilder stringBuilder = new StringBuilder();
     int row = p.getRow();
     int column = p.getColumn();
@@ -101,18 +125,18 @@ public class BoardImpl implements Board {
 
   @Override
   public List<String> movablePositions(String str) {
-    Square from = parseStringToPosition(str, squares);
+    Square from = parseStringToSquare(str, squares);
 
-    if (from.peek() == null) {
+    if (from.getPiece() == null) {
       return new ArrayList<>();
     }
-    return from.peek().movableSquares(from, squares).stream()
-        .map(BoardImpl::parsePositionToString).collect(
+    return from.getPiece().movableSquares(from, squares).stream()
+        .map(BoardImpl::parseSquareToString).collect(
             Collectors.toList());
   }
 
   @Override
-  public List<PieceSetResponseDto> move(String from, String to) {
+  public List<PieceSetResponseClientDto> move(String from, String to) {
 
     return null;
   }
@@ -126,4 +150,43 @@ public class BoardImpl implements Board {
   public Color winner() {
     return null;
   }
+
+  /**
+   * 클라이언트로부터 받은 기물 이동 명령 요청 DTO 를 도메인에서 사용할 DTO 로 변환한다.
+   *
+   * @param clientDto 클라이언트로부터 받은 DTO
+   * @return  도메인에서 사용할 DTO
+   */
+  private MoveRequestDomainDto parseMoveRequest(MoveRequestClientDto clientDto) {
+    String fromString = clientDto.getFrom();
+    String toString = clientDto.getTo();
+
+    Square from = parseStringToSquare(fromString, squares);
+    Square to = parseStringToSquare(toString, squares);
+
+    MoveRequestDomainDto ret = new MoveRequestDomainDto(from, to, squares);
+    if (from.getPiece() != null && from.getPiece().type() == PieceType.PAWN) {
+      ret.setTurnCount(turnCount);
+    }
+    return ret;
+  }
+
+
+  /**
+   * 클라이언트로부터 받은 움직일 수 있는 위치 요청 DTO 를 도메인에서 사용할 DTO 로 변환한다.
+   *
+   * @param clientDto 클라이언트로부터 받은 DTO
+   * @return 도메인에서 사용할 DTO
+   */
+  private PeekRequestDomainDto parsePeekRequest(PeekRequestClientDto clientDto) {
+    String fromString = clientDto.getFrom();
+    Square from = parseStringToSquare(fromString, squares);
+
+    PeekRequestDomainDto ret = new PeekRequestDomainDto(from, squares);
+    if (from.getPiece() != null && from.getPiece().type() == PieceType.PAWN) {
+      ret.setTurnCount(turnCount);
+    }
+    return ret;
+  }
+
 }

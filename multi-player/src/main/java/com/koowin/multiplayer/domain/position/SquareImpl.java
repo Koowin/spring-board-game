@@ -26,7 +26,7 @@ public class SquareImpl implements Square {
   }
 
   @Override
-  public Piece peek() {
+  public Piece getPiece() {
     return piece;
   }
 
