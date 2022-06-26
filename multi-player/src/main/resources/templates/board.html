@@ -40,19 +40,7 @@
   const buttonArr = new Array(8);
   let webSocket;
 
-  // Pieces
-  const blackKing = '♚';
-  const blackQueen = '♛';
-  const blackRook = '♜';
-  const blackKnight = '♞';
-  const blackBishop = '♝';
-  const blackPawn = '♟';
-  const whiteKing = '♔';
-  const whiteQueen = '♕';
-  const whiteRook = '♖';
-  const whiteKnight = '♘';
-  const whiteBishop = '♗';
-  const whitePawn = '♙';
+  let lastPeek;
 
   window.onload = function () {
     const board = document.getElementById('board');
@@ -64,7 +52,7 @@
       for (let j = 0; j < 8; j++) {
         buttonArr[i][j] = document.createElement('button');
 
-        buttonArr[i][j].id = String(String.fromCharCode(columnBase + j) + '' + (i + 1));
+        buttonArr[i][j].id = String(String.fromCharCode(columnBase + j) + '' + (8 - i));
 
         if ((i + j) % 2 === 0) {
           buttonArr[i][j].className = 'bright';
@@ -82,30 +70,30 @@
   }
 
   function locatePieces() {
-    buttonArr[0][0].innerText = blackRook;
-    buttonArr[0][7].innerText = blackRook;
-    buttonArr[0][1].innerText = blackKnight;
-    buttonArr[0][6].innerText = blackKnight;
-    buttonArr[0][2].innerText = blackBishop;
-    buttonArr[0][5].innerText = blackBishop;
-    buttonArr[0][3].innerText = blackQueen;
-    buttonArr[0][4].innerText = blackKing;
+    buttonArr[0][0].innerText = '♜';
+    buttonArr[0][7].innerText = '♜';
+    buttonArr[0][1].innerText = '♞';
+    buttonArr[0][6].innerText = '♞';
+    buttonArr[0][2].innerText = '♝';
+    buttonArr[0][5].innerText = '♝';
+    buttonArr[0][3].innerText = '♛';
+    buttonArr[0][4].innerText = '♚';
 
     for (let i = 0; i < 8; i++) {
-      buttonArr[1][i].innerText = blackPawn;
+      buttonArr[1][i].innerText = '♟';
     }
 
-    buttonArr[7][0].innerText = whiteRook;
-    buttonArr[7][7].innerText = whiteRook;
-    buttonArr[7][1].innerText = whiteKnight;
-    buttonArr[7][6].innerText = whiteKnight;
-    buttonArr[7][2].innerText = whiteBishop;
-    buttonArr[7][5].innerText = whiteBishop;
-    buttonArr[7][3].innerText = whiteQueen;
-    buttonArr[7][4].innerText = whiteKing;
+    buttonArr[7][0].innerText = '♖';
+    buttonArr[7][7].innerText = '♖';
+    buttonArr[7][1].innerText = '♘';
+    buttonArr[7][6].innerText = '♘';
+    buttonArr[7][2].innerText = '♗';
+    buttonArr[7][5].innerText = '♗';
+    buttonArr[7][3].innerText = '♕';
+    buttonArr[7][4].innerText = '♔';
 
     for (let i = 0; i < 8; i++) {
-      buttonArr[6][i].innerText = whitePawn;
+      buttonArr[6][i].innerText = '♙';
     }
   }
 
@@ -123,19 +111,33 @@
   function send(event) {
 
     if (event.target.classList.contains('mark')) {
-
+      webSocket.send(JSON.stringify({type: 'MOVE', from: lastPeek, to: event.target.id}))
     } else {
-      webSocket.send(JSON.stringify({type: 'PEEK', from: event.target.id}));
+      lastPeek = event.target.id;
+      webSocket.send(JSON.stringify({type: 'PEEK', from: lastPeek}));
     }
+    clearAll();
   }
 
   function onMessage(e) {
     console.log(e);
     let result = JSON.parse(e.data);
+
     console.log(result);
-    for (let i = 0; i < result.length; i++) {
-      if (result[i].operation === 'SET') {
-        document.getElementById(result[i].square).innerText = result[i].pieceSymbol;
+
+    if (result.type === 'MARK') {
+      let marks = result.marks;
+      for (let i = 0; i < marks.length; i++) {
+        document.getElementById(marks[i]).classList.add('mark');
+      }
+    } else {
+      let modifies = result.modifies;
+      for (let i = 0; i < modifies.length; i++) {
+        if (modifies[i].operation == 'SET') {
+          document.getElementById(modifies[i].square).innerText = modifies[i].pieceSymbol;
+        } else {
+          document.getElementById(modifies[i].square).innerText = '';
+        }
       }
     }
   }

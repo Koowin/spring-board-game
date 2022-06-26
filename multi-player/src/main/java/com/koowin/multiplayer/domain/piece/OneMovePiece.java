@@ -1,7 +1,7 @@
 package com.koowin.multiplayer.domain.piece;
 
 import com.koowin.multiplayer.domain.board.Color;
-import com.koowin.multiplayer.domain.position.Square;
+import com.koowin.multiplayer.domain.square.Square;
 import java.util.ArrayList;
 import java.util.List;
 

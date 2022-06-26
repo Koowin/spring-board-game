@@ -27,7 +27,8 @@ public class GameController {
   }
 
   @GetMapping("/games/{id}")
-  public String gameRoom(@PathVariable String id, Model model) {
+  public String gameRoom(@PathVariable String id, Model model, HttpSession session) {
+    session.setAttribute("gameId", Long.parseLong(id));
     return "board";
   }
 

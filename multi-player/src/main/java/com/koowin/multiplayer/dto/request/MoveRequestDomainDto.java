@@ -1,11 +1,12 @@
 package com.koowin.multiplayer.dto.request;
 
 import com.koowin.multiplayer.domain.piece.PieceType;
-import com.koowin.multiplayer.domain.position.Square;
+import com.koowin.multiplayer.domain.square.Square;
 import lombok.Getter;
 
 @Getter
 public class MoveRequestDomainDto {
+
   private final Square from;
   private final Square to;
   private final Square[][] squares;

@@ -1,5 +1,5 @@
 package com.koowin.multiplayer.exception;
 
-public class PieceCannotMoveException extends RuntimeException{
+public class PieceCannotMoveException extends RuntimeException {
 
 }

@@ -1,5 +1,5 @@
 package com.koowin.multiplayer.exception;
 
-public class PositionParseException extends RuntimeException{
+public class PositionParseException extends RuntimeException {
 
 }

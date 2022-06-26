@@ -1,5 +1,5 @@
 package com.koowin.multiplayer.exception;
 
-public class PromotionTypeInvalidException extends RuntimeException{
+public class PromotionTypeInvalidException extends RuntimeException {
 
 }

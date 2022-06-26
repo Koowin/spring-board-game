@@ -1,5 +1,5 @@
 package com.koowin.multiplayer.dto.request;
 
-public enum MessageType {
+public enum RequestMessageType {
   ENTER, PEEK, MOVE, LEAVE
 }

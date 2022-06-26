@@ -1,15 +1,19 @@
 package com.koowin.multiplayer.domain.board;
 
+import com.koowin.multiplayer.domain.piece.Piece;
 import com.koowin.multiplayer.domain.piece.PieceType;
 import com.koowin.multiplayer.domain.piece.pieceImpl.*;
-import com.koowin.multiplayer.domain.position.Square;
-import com.koowin.multiplayer.domain.position.SquareImpl;
+import com.koowin.multiplayer.domain.square.Square;
+import com.koowin.multiplayer.domain.square.SquareImpl;
 import com.koowin.multiplayer.dto.request.MoveRequestClientDto;
 import com.koowin.multiplayer.dto.request.MoveRequestDomainDto;
 import com.koowin.multiplayer.dto.request.PeekRequestClientDto;
 import com.koowin.multiplayer.dto.request.PeekRequestDomainDto;
+import com.koowin.multiplayer.dto.response.PieceSetOperation;
 import com.koowin.multiplayer.dto.response.PieceSetResponseClientDto;
+import com.koowin.multiplayer.dto.response.PieceSetResponseDomainDto;
 import com.koowin.multiplayer.exception.BadSquareNameException;
+import com.koowin.multiplayer.exception.PieceCannotMoveException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -34,7 +38,7 @@ public class BoardImpl implements Board {
   /**
    * a1 ~ h8 까지의 체스 칸 이름을 실제 Square 로 변환해준다.
    *
-   * @param p 체스 칸 이름
+   * @param p       체스 칸 이름
    * @param squares 보드
    * @return 체스 칸 이름으로 찾은 보드 안의 특정 칸
    * @throws BadSquareNameException 올바르지 않은 이름을 입력함
@@ -136,9 +140,19 @@ public class BoardImpl implements Board {
   }
 
   @Override
-  public List<PieceSetResponseClientDto> move(String from, String to) {
+  public List<PieceSetResponseClientDto> move(MoveRequestClientDto clientDto) {
+    MoveRequestDomainDto domainDto = parseMoveRequest(clientDto);
 
-    return null;
+    Piece piece = domainDto.getFrom().getPiece();
+    System.out.println(domainDto.getFrom());
+    System.out.println(piece);
+    if (piece == null) {
+      throw new PieceCannotMoveException();
+    }
+
+    List<PieceSetResponseDomainDto> domainDtos = piece.move(domainDto);
+
+    return domainDtos.stream().map(BoardImpl::parsePieceSetResponse).collect(Collectors.toList());
   }
 
   @Override
@@ -155,7 +169,7 @@ public class BoardImpl implements Board {
    * 클라이언트로부터 받은 기물 이동 명령 요청 DTO 를 도메인에서 사용할 DTO 로 변환한다.
    *
    * @param clientDto 클라이언트로부터 받은 DTO
-   * @return  도메인에서 사용할 DTO
+   * @return 도메인에서 사용할 DTO
    */
   private MoveRequestDomainDto parseMoveRequest(MoveRequestClientDto clientDto) {
     String fromString = clientDto.getFrom();
@@ -189,4 +203,17 @@ public class BoardImpl implements Board {
     return ret;
   }
 
+  private static PieceSetResponseClientDto parsePieceSetResponse(
+      PieceSetResponseDomainDto domainDto) {
+    PieceSetResponseClientDto ret = PieceSetResponseClientDto.builder()
+        .square(parseSquareToString(domainDto.getSquare()))
+        .operation(domainDto.getOperation())
+        .build();
+
+    if (domainDto.getOperation() == PieceSetOperation.SET) {
+      ret.setPieceSymbol(domainDto.getPieceType().getSymbol(domainDto.getColor()));
+    }
+
+    return ret;
+  }
 }

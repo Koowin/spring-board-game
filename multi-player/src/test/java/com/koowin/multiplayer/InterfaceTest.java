@@ -13,6 +13,7 @@ public class InterfaceTest {
   }
 
   static class TestImpl implements Test {
+
     private final int num;
 
     public TestImpl(int num) {

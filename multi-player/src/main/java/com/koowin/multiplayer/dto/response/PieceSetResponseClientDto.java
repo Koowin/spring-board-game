@@ -9,6 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PieceSetResponseClientDto {
+
   private String square;
   private PieceSetOperation operation;
   private String pieceSymbol;

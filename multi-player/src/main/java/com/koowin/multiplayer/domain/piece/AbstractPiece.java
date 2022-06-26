@@ -1,7 +1,7 @@
 package com.koowin.multiplayer.domain.piece;
 
 import com.koowin.multiplayer.domain.board.Color;
-import com.koowin.multiplayer.domain.position.Square;
+import com.koowin.multiplayer.domain.square.Square;
 import com.koowin.multiplayer.dto.request.MoveRequestDomainDto;
 
 public abstract class AbstractPiece implements Piece {
@@ -48,5 +48,13 @@ public abstract class AbstractPiece implements Piece {
     }
 
     return true;
+  }
+
+  @Override
+  public String toString() {
+    return "Piece{" +
+        "type=" + type +
+        ", color=" + color +
+        '}';
   }
 }

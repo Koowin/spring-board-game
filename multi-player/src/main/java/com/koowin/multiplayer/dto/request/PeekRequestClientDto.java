@@ -6,6 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PeekRequestClientDto {
+
   private String from;
 
   public PeekRequestClientDto(String from) {

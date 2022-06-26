@@ -6,8 +6,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ClientMessage {
-  private MessageType type;
+public class ClientRequestMessage {
+
+  private RequestMessageType type;
   private String from;
   private String to;
   private PieceType promotionType;
@@ -23,4 +24,6 @@ public class ClientMessage {
   public PeekRequestClientDto toPeekDto() {
     return new PeekRequestClientDto(from);
   }
+
+
 }

@@ -11,6 +11,7 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 public class MemberRegisterDto {
+
   private String name;
   private String password;
 }

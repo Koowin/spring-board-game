@@ -3,16 +3,16 @@ package com.koowin.multiplayer.sockethandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.koowin.multiplayer.domain.board.Board;
 import com.koowin.multiplayer.domain.board.BoardImpl;
-import com.koowin.multiplayer.domain.board.Color;
-import com.koowin.multiplayer.domain.piece.PieceType;
-import com.koowin.multiplayer.dto.request.ClientMessage;
-import com.koowin.multiplayer.dto.request.MessageType;
+import com.koowin.multiplayer.dto.request.ClientRequestMessage;
+import com.koowin.multiplayer.dto.request.MoveRequestClientDto;
+import com.koowin.multiplayer.dto.request.RequestMessageType;
 import com.koowin.multiplayer.dto.request.PeekRequestClientDto;
-import com.koowin.multiplayer.dto.response.PieceSetOperation;
+import com.koowin.multiplayer.dto.response.ClientResponseMessage;
 import com.koowin.multiplayer.dto.response.PieceSetResponseClientDto;
+import com.koowin.multiplayer.dto.response.ResponseMessageType;
 import com.koowin.multiplayer.repository.GameRoomRepository;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -28,34 +28,48 @@ public class GameHandler extends TextWebSocketHandler {
 
   private final GameRoomRepository gameRoomRepository;
   private final ObjectMapper objectMapper;
+  private Board board = new BoardImpl();
 
   @Override
   public void afterConnectionEstablished(WebSocketSession session) throws Exception {
     log.info("Connected: " + session);
+    Map<String, Object> attributes = session.getAttributes();
+    System.out.println(attributes);
+
+    System.out.println(attributes.get("uid") + " " + attributes.get("uid").getClass());
+    System.out.println(attributes.get("gameId"));
     super.afterConnectionEstablished(session);
   }
 
   @Override
   protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
     String msg = message.getPayload();
-    ClientMessage clientMessage = objectMapper.readValue(msg, ClientMessage.class);
+    ClientRequestMessage clientRequestMessage = objectMapper.readValue(msg,
+        ClientRequestMessage.class);
     log.info(msg);
-    if (clientMessage.getType() == MessageType.PEEK) {
-      PeekRequestClientDto peekRequestClientDto = clientMessage.toPeekDto();
-      log.info("From client : " + peekRequestClientDto.getFrom());
+    if (clientRequestMessage.getType() == RequestMessageType.PEEK) {
+      PeekRequestClientDto peekRequestClientDto = clientRequestMessage.toPeekDto();
 
-      List<PieceSetResponseClientDto> list = new ArrayList<>();
-      list.add(PieceSetResponseClientDto.builder()
-          .operation(PieceSetOperation.SET)
-          .square("a8")
-          .pieceSymbol("♙")
-          .build());
-      list.add(PieceSetResponseClientDto.builder()
-          .operation(PieceSetOperation.SET)
-          .square("a7")
-              .pieceSymbol("♚")
-          .build());
-      TextMessage textMessage = new TextMessage(objectMapper.writeValueAsString(list));
+      List<String> list = board.movablePositions(peekRequestClientDto.getFrom());
+      ClientResponseMessage clientResponseMessage = ClientResponseMessage.builder()
+          .type(ResponseMessageType.MARK)
+          .marks(list)
+          .build();
+
+      TextMessage textMessage = new TextMessage(
+          objectMapper.writeValueAsString(clientResponseMessage));
+      session.sendMessage(textMessage);
+    } else {
+      MoveRequestClientDto moveRequestClientDto = clientRequestMessage.toMoveDto();
+
+      List<PieceSetResponseClientDto> modifies = board.move(moveRequestClientDto);
+      ClientResponseMessage clientResponseMessage = ClientResponseMessage.builder()
+          .type(ResponseMessageType.MODIFY)
+          .modifies(modifies)
+          .build();
+
+      TextMessage textMessage = new TextMessage(
+          objectMapper.writeValueAsString(clientResponseMessage));
       session.sendMessage(textMessage);
     }
   }

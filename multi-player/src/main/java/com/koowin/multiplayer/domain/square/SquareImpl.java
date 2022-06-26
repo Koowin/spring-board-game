@@ -1,4 +1,4 @@
-package com.koowin.multiplayer.domain.position;
+package com.koowin.multiplayer.domain.square;
 
 import com.koowin.multiplayer.domain.piece.Piece;
 
