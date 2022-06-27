@@ -25,6 +25,9 @@ public class Bishop extends ManyMovePiece {
 
   @Override
   public boolean canMove(MoveRequestDomainDto movementDto) {
+    Square from = movementDto.getFrom();
+    Square to = movementDto.getTo();
+
     return false;
   }
 
