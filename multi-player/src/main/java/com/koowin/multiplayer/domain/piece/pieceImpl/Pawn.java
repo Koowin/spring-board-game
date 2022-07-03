@@ -6,6 +6,7 @@ import com.koowin.multiplayer.domain.board.Color;
 import com.koowin.multiplayer.domain.piece.AbstractPiece;
 import com.koowin.multiplayer.domain.piece.PieceType;
 import com.koowin.multiplayer.domain.square.Square;
+import com.koowin.multiplayer.dto.response.PieceSetOperation;
 import com.koowin.multiplayer.dto.response.PieceSetResponseDomainDto;
 import com.koowin.multiplayer.exception.NeedPromotionTypeException;
 import com.koowin.multiplayer.exception.PieceCannotMoveException;
@@ -24,13 +25,36 @@ public class Pawn extends AbstractPiece {
 
   @Override
   public boolean canMove(MoveRequestDomainDto movementDto) {
-    return false;
+    return true;
   }
 
   @Override
   public List<PieceSetResponseDomainDto> move(MoveRequestDomainDto movementDto)
       throws PieceCannotMoveException, NeedPromotionTypeException, PromotionTypeInvalidException {
-    return null;
+
+    List<PieceSetResponseDomainDto> ret = new ArrayList<>();
+
+    if (!canMove(movementDto)) {
+      return ret;
+    }
+
+    movementDto.getFrom().setPiece(null);
+    movementDto.getTo().setPiece(this);
+
+    ret.add(PieceSetResponseDomainDto.builder()
+        .operation(PieceSetOperation.DELETE)
+        .square(movementDto.getFrom())
+        .build()
+    );
+
+    ret.add(PieceSetResponseDomainDto.builder()
+        .operation(PieceSetOperation.SET)
+        .square(movementDto.getTo())
+        .color(color)
+        .pieceType(type)
+        .build());
+    isMoved = true;
+    return ret;
   }
 
   @Override
@@ -42,9 +66,9 @@ public class Pawn extends AbstractPiece {
 
     int rowDirection;
     if (this.color == Color.WHITE) {
-      rowDirection = 1;
-    } else {
       rowDirection = -1;
+    } else {
+      rowDirection = 1;
     }
 
     int nextRow = row + rowDirection;
